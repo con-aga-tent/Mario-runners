@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: white;
+  font-family: sans-serif;
+}
+
+#gameCanvas {
+  display: block;
+  background: white;
+}
+
+#muteBtn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  padding: 6px 10px;
+  border: none;
+  background: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+}
