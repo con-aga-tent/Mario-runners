@@ -1,24 +1,46 @@
-body {
+html, body {
   margin: 0;
+  padding: 0;
   overflow: hidden;
-  background: white;
-  font-family: sans-serif;
+  background: #ffffff;
 }
 
 #gameCanvas {
   display: block;
-  background: white;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(#87ceeb, #ffffff);
 }
 
-#muteBtn {
+#muteBtn, #fireBtn {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 15px;
+  right: 15px;
   font-size: 24px;
-  padding: 6px 10px;
+  background: none;
   border: none;
-  background: #eee;
-  border-radius: 8px;
   cursor: pointer;
-  z-index: 10;
+  margin-left: 5px;
+}
+
+#fireBtn { right: 60px; }
+
+#dpad {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: grid;
+  grid-template-columns: 50px 50px 50px;
+  grid-template-rows: 50px 50px;
+  gap: 5px;
+}
+
+#dpad button {
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(200,200,200,0.7);
+  cursor: pointer;
 }
