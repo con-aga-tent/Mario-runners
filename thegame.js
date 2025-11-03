@@ -1,113 +1,109 @@
-// --- Canvas setup ---
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
 
-// --- Core values ---
-const gravity = 0.67;
-let isMuted = false;
+const prefix = "https://raw.githubusercontent.com/con-aga-tent/Mario-runners/main/assets";
 
-// --- Music ---
-const music = new Audio("https://raw.githubusercontent.com/con-aga-tent/Mario-runners/main/assets/music/overworld.mp3");
+// 🎵 Music
+const music = new Audio(`${prefix}/music/overworld.mp3`);
 music.loop = true;
-music.volume = 0.5;
-music.play();
-document.getElementById("muteBtn").onclick = () => {
-  isMuted = !isMuted;
-  music.muted = isMuted;
-  muteBtn.textContent = isMuted ? "🔇" : "🔊";
-};
+window.addEventListener("click", () => music.play().catch(()=>{}), { once: true });
 
-// --- Images ---
-const prefix = "https://raw.githubusercontent.com/con-aga-tent/Mario-runners/main/assets/sprites";
-const marioSmallR = new Image(); marioSmallR.src = `${prefix}/mario/small_mario.png`;
-const marioBigR = new Image(); marioBigR.src = `${prefix}/mario/big_mario.png`;
-const marioFireR = new Image(); marioFireR.src = `${prefix}/mario/fire_mario.png`;
-const groundImg = new Image(); groundImg.src = `${prefix}/blocks/ground.png`;
-const brickImg = new Image(); brickImg.src = `${prefix}/blocks/brick.png`;
-const qBlockImg = new Image(); qBlockImg.src = `${prefix}/blocks/?block.png`;
-const goalPoleImg = new Image(); goalPoleImg.src = `${prefix}/goal-poles/Regular_GoalPole.png`;
-const goombaImg = new Image(); goombaImg.src = `${prefix}/enemies/goomba.png`;
-const fireFlowerImg = new Image(); fireFlowerImg.src = `${prefix}/powerups/fireflower.png`;
+// 🖼️ Sprites
+const marioSmall = new Image(); marioSmall.src = `${prefix}/sprites/mario/small_mario.png`;
+const marioBig = new Image(); marioBig.src = `${prefix}/sprites/mario/big_mario.png`;
+const marioFire = new Image(); marioFire.src = `${prefix}/sprites/mario/fire_mario.png`;
 
-// --- Player setup ---
-const player = {
+const groundImg = new Image(); groundImg.src = `${prefix}/sprites/blocks/ground.png`;
+const brickImg = new Image(); brickImg.src = `${prefix}/sprites/blocks/brick.png`;
+const qBlockImg = new Image(); qBlockImg.src = `${prefix}/sprites/blocks/%3Fblock.png`;
+const goalPoleImg = new Image(); goalPoleImg.src = `${prefix}/sprites/goal-poles/GoalPole_Normal.png`;
+const goombaImg = new Image(); goombaImg.src = `${prefix}/sprites/enemies/goomba.png`;
+const fireFlowerImg = new Image(); fireFlowerImg.src = `${prefix}/sprites/powerups/fireflower.png`;
+const cloudBg = new Image(); cloudBg.src = `${prefix}/sprites/bg/cloud.png`;
+
+// 🧍 Mario
+let player = {
   x: 100,
-  y: canvas.height - 300,
-  w: 40,
-  h: 50,
+  y: 0,
+  w: 32,
+  h: 32,
   velX: 0,
   velY: 0,
-  speed: 5,
-  jumpPower: -15,
-  jumping: false,
+  speed: 4,
+  jumpForce: 10,
+  grounded: false,
+  state: "small", // small | big | fire
   facingRight: true,
-  form: "small", // "small" | "big" | "fire"
-  slidingFlag: false,
-  canShoot: false
+  slidingFlag: false
 };
 
-const fireballs = [];
-const goombas = [
-  { x: 700, y: canvas.height - 130, w: 40, h: 40, alive: true }
-];
-const qBlocks = [
-  { x: 400, y: canvas.height - 200, w: 40, h: 40, used: false, contains: "fireflower" }
-];
+// 🔥 Fireballs
+let fireballs = [];
 
-const platforms = [];
-for (let i = 0; i < 10000; i += 40) {
-  platforms.push({ x: i, y: canvas.height - 80, width: 40, height: 80, img: groundImg });
+// 🌍 Level Setup
+const gravity = 0.5;
+const groundHeight = 64;
+const levelWidth = 10000;
+const camera = { x: 0, y: 0 };
+
+let platforms = [];
+for (let i = 0; i < levelWidth; i += 64) {
+  platforms.push({ x: i, y: canvas.height - groundHeight, w: 64, h: 64, img: groundImg });
 }
 
-// staircase
-for (let i = 0; i < 6; i++) {
-  platforms.push({
-    x: 9300 + i * 40,
-    y: canvas.height - 80 - i * 40,
-    width: 40,
-    height: 40,
-    img: brickImg
-  });
+// Staircase to goal
+for (let i = 0; i < 5; i++) {
+  platforms.push({ x: 9400 + i * 64, y: canvas.height - groundHeight - i * 64, w: 64, h: 64, img: brickImg });
 }
 
-const goalPole = { x: 9600, y: canvas.height - 400, w: 40, h: 400 };
+// Question block
+const qBlock = { x: 600, y: 300, w: 32, h: 32, hit: false };
 
+// Fire flower
+let fireFlower = null;
+
+// Goal pole
+const goalPole = { x: 9700, y: canvas.height - 320, w: 32, h: 320 };
+
+// Enemies
+let goombas = [{ x: 800, y: canvas.height - groundHeight - 32, w: 32, h: 32, dir: -1 }];
+
+// 🎮 Controls
 let keys = {};
-onkeydown = e => keys[e.code] = true;
-onkeyup = e => keys[e.code] = false;
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
 
-// --- Touch buttons ---
 document.getElementById("left").ontouchstart = () => keys["ArrowLeft"] = true;
 document.getElementById("left").ontouchend = () => keys["ArrowLeft"] = false;
 document.getElementById("right").ontouchstart = () => keys["ArrowRight"] = true;
 document.getElementById("right").ontouchend = () => keys["ArrowRight"] = false;
-document.getElementById("jump").ontouchstart = () => keys["Space"] = true;
-document.getElementById("jump").ontouchend = () => keys["Space"] = false;
+document.getElementById("jump").ontouchstart = () => jump();
+document.getElementById("fire").ontouchstart = () => shootFire();
 
-document.getElementById("fire").ontouchstart = () => shootFireball();
-document.getElementById("fire").ontouchend = () => keys["ControlLeft"] = false;
-
-// --- Fireball shooting ---
-function shootFireball() {
-  if (!player.canShoot) return;
-  const fb = {
-    x: player.x + (player.facingRight ? player.w : -10),
-    y: player.y + player.h / 2,
-    w: 10,
-    h: 10,
-    velX: player.facingRight ? 8 : -8,
-    velY: -3
-  };
-  fireballs.push(fb);
+function jump() {
+  if (player.grounded && !player.slidingFlag) {
+    player.velY = -player.jumpForce;
+    player.grounded = false;
+  }
 }
 
-// --- Update loop ---
+function shootFire() {
+  if (player.state === "fire" && fireballs.length < 3) {
+    const dir = player.facingRight ? 1 : -1;
+    fireballs.push({
+      x: player.x + player.w / 2,
+      y: player.y + player.h / 2,
+      velX: 8 * dir,
+      radius: 8
+    });
+  }
+}
+
+// 🧠 Game Loop
 function update() {
   if (player.slidingFlag) return;
 
-  // Move left/right
+  // Movement
   if (keys["ArrowRight"]) {
     player.velX = player.speed;
     player.facingRight = true;
@@ -118,111 +114,89 @@ function update() {
     player.velX = 0;
   }
 
-  if (keys["Space"] && !player.jumping) {
-    player.velY = player.jumpPower;
-    player.jumping = true;
-  }
+  // Jump
+  if (keys[" "]) jump();
 
-  if (keys["ControlLeft"]) shootFireball();
-
+  // Gravity
   player.velY += gravity;
   player.x += player.velX;
   player.y += player.velY;
+  player.grounded = false;
 
-  // Ground/platform collisions
-  for (let plat of platforms) {
+  // Collisions
+  for (let p of platforms) {
     if (
-      player.x + player.w > plat.x &&
-      player.x < plat.x + plat.width &&
-      player.y + player.h > plat.y &&
-      player.y + player.h < plat.y + 30 &&
-      player.velY >= 0
+      player.x < p.x + p.w &&
+      player.x + player.w > p.x &&
+      player.y < p.y + p.h &&
+      player.y + player.h > p.y
     ) {
-      player.y = plat.y - player.h;
-      player.velY = 0;
-      player.jumping = false;
+      if (player.velY > 0) {
+        player.y = p.y - player.h;
+        player.velY = 0;
+        player.grounded = true;
+      }
     }
   }
 
-  // Hitting question blocks
-  for (let block of qBlocks) {
+  // Question block hit
+  if (!qBlock.hit && player.velY < 0 && player.y < qBlock.y + qBlock.h &&
+      player.x + player.w > qBlock.x && player.x < qBlock.x + qBlock.w) {
+    qBlock.hit = true;
+    fireFlower = { x: qBlock.x, y: qBlock.y - 32, w: 32, h: 32, vy: -2 };
+  }
+
+  // Fire flower float up
+  if (fireFlower) {
+    fireFlower.y += fireFlower.vy;
+    if (fireFlower.y <= qBlock.y - 64) fireFlower.vy = 0;
+
+    // Pickup
     if (
-      player.x + player.w > block.x &&
-      player.x < block.x + block.w &&
-      player.y < block.y + block.h &&
-      player.y > block.y &&
-      player.velY < 0 &&
-      !block.used
+      player.x < fireFlower.x + fireFlower.w &&
+      player.x + player.w > fireFlower.x &&
+      player.y < fireFlower.y + fireFlower.h &&
+      player.y + player.h > fireFlower.y
     ) {
-      block.used = true;
-      player.velY = 0;
-      // Spawn fireflower
-      block.powerup = {
-        x: block.x,
-        y: block.y - 40,
-        w: 40,
-        h: 40,
-        type: "fireflower",
-        collected: false
-      };
-    }
-    // Collect powerup
-    if (block.powerup && !block.powerup.collected) {
-      if (
-        player.x + player.w > block.powerup.x &&
-        player.x < block.powerup.x + block.powerup.w &&
-        player.y + player.h > block.powerup.y &&
-        player.y < block.powerup.y + block.powerup.h
-      ) {
-        block.powerup.collected = true;
-        player.form = "fire";
-        player.canShoot = true;
-      }
+      fireFlower = null;
+      player.state = "fire";
     }
   }
 
   // Fireballs move
-  fireballs.forEach(fb => {
-    fb.x += fb.velX;
-    fb.y += fb.velY;
-    fb.velY += 0.3;
-    // bounce
-    if (fb.y + fb.h > canvas.height - 80) {
-      fb.y = canvas.height - 80 - fb.h;
-      fb.velY = -6;
-    }
-  });
+  for (let f of fireballs) f.x += f.velX;
 
-  // Fireball-Goomba collision
-  goombas.forEach(g => {
-    fireballs.forEach(fb => {
-      if (
-        g.alive &&
-        fb.x + fb.w > g.x &&
-        fb.x < g.x + g.w &&
-        fb.y + fb.h > g.y &&
-        fb.y < g.y + g.h
-      ) {
-        g.alive = false;
+  // Goombas move
+  for (let g of goombas) {
+    g.x += g.dir * 1.5;
+    if (g.x < 700 || g.x > 1000) g.dir *= -1;
+  }
+
+  // Fireball hits goomba
+  goombas = goombas.filter(g => {
+    for (let f of fireballs) {
+      if (f.x > g.x && f.x < g.x + g.w && f.y > g.y && f.y < g.y + g.h) {
+        return false;
       }
-    });
+    }
+    return true;
   });
 
-  // Goal pole
+  // Flagpole detection
   if (
+    !player.slidingFlag &&
     player.x + player.w > goalPole.x &&
     player.x < goalPole.x + goalPole.w &&
     player.y + player.h > goalPole.y &&
     player.y < goalPole.y + goalPole.h
   ) {
     player.slidingFlag = true;
-    player.velX = 0;
-    player.velY = 0;
+    player.velX = player.velY = 0;
     player.x = goalPole.x - player.w + 5;
-    const slideDown = setInterval(() => {
+    const slide = setInterval(() => {
       player.y += 3;
-      if (player.y + player.h >= canvas.height - 80) {
-        clearInterval(slideDown);
+      if (player.y + player.h >= canvas.height - groundHeight) {
+        clearInterval(slide);
         setTimeout(() => {
           alert("✅ Level Complete!");
           location.reload();
@@ -230,57 +204,50 @@ function update() {
       }
     }, 16);
   }
+
+  // Camera follow
+  camera.x = Math.max(0, player.x - canvas.width / 2);
 }
 
-// --- Draw loop ---
+// 🎨 Draw
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Background
+  // Sky
   ctx.fillStyle = "#5c94fc";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < levelWidth; i += 400) {
+    ctx.drawImage(cloudBg, i - camera.x * 0.5, 80, 128, 64);
+  }
 
-  // Platforms
-  platforms.forEach(p => {
-    ctx.drawImage(p.img, p.x, p.y, p.width, p.height);
-  });
+  // Ground and blocks
+  for (let p of platforms) ctx.drawImage(p.img, p.x - camera.x, p.y, p.w, p.h);
 
-  // Question blocks
-  qBlocks.forEach(b => {
-    ctx.drawImage(b.used ? brickImg : qBlockImg, b.x, b.y, b.w, b.h);
-    if (b.powerup && !b.powerup.collected)
-      ctx.drawImage(fireFlowerImg, b.powerup.x, b.powerup.y, b.powerup.w, b.powerup.h);
-  });
+  // Question block
+  ctx.drawImage(qBlock.hit ? brickImg : qBlockImg, qBlock.x - camera.x, qBlock.y, qBlock.w, qBlock.h);
 
-  // Goombas
-  goombas.forEach(g => {
-    if (g.alive) ctx.drawImage(goombaImg, g.x, g.y, g.w, g.h);
-  });
-
-  // Fireballs
-  fireballs.forEach(fb => {
-    ctx.fillStyle = "orange";
-    ctx.beginPath();
-    ctx.arc(fb.x, fb.y, fb.w / 2, 0, Math.PI * 2);
-    ctx.fill();
-  });
+  // Fire flower
+  if (fireFlower) ctx.drawImage(fireFlowerImg, fireFlower.x - camera.x, fireFlower.y, fireFlower.w, fireFlower.h);
 
   // Goal pole
-  ctx.drawImage(goalPoleImg, goalPole.x, goalPole.y, goalPole.w, goalPole.h);
+  ctx.drawImage(goalPoleImg, goalPole.x - camera.x, goalPole.y, goalPole.w, goalPole.h);
 
-  // Player (flip for facing)
-  const marioImg =
-    player.form === "fire" ? marioFireR :
-    player.form === "big" ? marioBigR : marioSmallR;
+  // Goombas
+  for (let g of goombas) ctx.drawImage(goombaImg, g.x - camera.x, g.y, g.w, g.h);
 
+  // Fireballs
+  ctx.fillStyle = "orange";
+  for (let f of fireballs) ctx.beginPath(), ctx.arc(f.x - camera.x, f.y, f.radius, 0, Math.PI * 2), ctx.fill();
+
+  // Mario sprite
   ctx.save();
-  ctx.translate(player.x + player.w / 2, player.y + player.h / 2);
+  ctx.translate(player.x - camera.x + player.w / 2, player.y + player.h / 2);
   ctx.scale(player.facingRight ? 1 : -1, 1);
+  const marioImg = player.state === "fire" ? marioFire : player.state === "big" ? marioBig : marioSmall;
   ctx.drawImage(marioImg, -player.w / 2, -player.h / 2, player.w, player.h);
   ctx.restore();
 }
 
-// --- Game loop ---
 function gameLoop() {
   update();
   draw();
