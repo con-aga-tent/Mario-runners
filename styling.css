@@ -1,61 +1,85 @@
 body {
-    margin: 0;
-    overflow: hidden;
-    background: #000;
-    touch-action: none;
-    font-family: sans-serif;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  touch-action: none;
+  user-select: none;
 }
 
-/* TITLE SCREEN */
-#titleScreen {
-    position: fixed;
-    inset: 0;
-    background: black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* Canvas fills screen */
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  background: #6bb5ff;
 }
 
-#titleImage {
-    width: 80%;
-    max-width: 800px;
-    margin-bottom: 40px;
+/* Hide anything with this class */
+.hidden {
+  display: none !important;
 }
 
-#startButton {
-    padding: 20px 50px;
-    font-size: 32px;
-    border-radius: 10px;
-    border: none;
-    background: #ffcc00;
-    color: black;
+/* ---------- TITLE SCREEN ---------- */
+#title-screen {
+  position: absolute;
+  inset: 0;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* CANVAS */
-#gameCanvas {
-    display: none;
-    width: 100vw;
-    height: 100vh;
-    background: skyblue;
+#title-image {
+  width: 60%;
+  max-width: 420px;
+  height: auto;
 }
 
-/* MOBILE CONTROLS */
+#start-button {
+  padding: 18px 40px;
+  font-size: 24px;
+  margin-top: 30px;
+  border-radius: 12px;
+  border: none;
+  background: #ffcc00;
+}
+
+/* ---------- INTRO VIDEO ---------- */
+#intro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- TOUCH CONTROLS ---------- */
 #controls {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 80px);
-    gap: 10px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mid-row {
+  display: flex;
+  gap: 14px;
+}
+
+/* Buttons */
 #controls button {
-    background: rgba(0,0,0,0.5);
-    border: 2px solid white;
-    color: white;
-    font-size: 26px;
-    border-radius: 12px;
-    height: 70px;
+  width: 70px;
+  height: 70px;
+  font-size: 32px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.45);
+  color: white;
+  border: 2px solid #fff;
 }
