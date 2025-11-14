@@ -1,27 +1,14 @@
 body {
     margin: 0;
+    background: #5c94fc;
     overflow: hidden;
-    background: #000;
-    touch-action: none;
+    font-family: sans-serif;
+    text-align: center;
 }
 
-/* Canvas */
-#gameCanvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    background: #70c0ff;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* -----------------------------------
-   TITLE SCREEN
------------------------------------ */
+/* Title screen */
 #title-screen {
-    position: fixed;
+    position: absolute;
     width: 100%;
     height: 100%;
     background: #000;
@@ -32,65 +19,38 @@ body {
 }
 
 #title-image {
-    width: 90%;
-    max-width: 480px;
+    width: 600px;
+    max-width: 90%;
 }
 
 #start-button {
-    margin-top: 20px;
-    padding: 18px 40px;
-    font-size: 22px;
-    border: 3px solid white;
-    background: #e00;
-    color: white;
+    margin-top: 40px;
+    font-size: 32px;
+    padding: 15px 30px;
     border-radius: 10px;
+    border: none;
 }
 
-/* -----------------------------------
-   MOBILE CONTROLS
------------------------------------ */
-#controls {
-    position: fixed;
+/* Intro video */
+#intro-video {
     width: 100%;
     height: 100%;
+}
+
+/* Game */
+#controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+#controls button {
+    font-size: 32px;
+    margin: 5px;
+    padding: 15px 25px;
+    border-radius: 12px;
+}
+
+.hidden {
     display: none;
-}
-
-#dpad {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  user-select: none;
-}
-
-.updown {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-#dpad button {
-  background: #333;
-  border: 2px solid #fff;
-  color: #fff;
-  font-size: 26px;
-  border-radius: 10px;
-  width: 65px;
-  height: 65px;
-}
-
-#fire-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 70px;
-  height: 70px;
-  background: #ff4c4c;
-  border: 3px solid white;
-  border-radius: 50%;
-  color: white;
-  font-size: 32px;
 }
