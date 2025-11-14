@@ -1,52 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Super Mario Bros Deluxe — 1-1 (Hybrid)</title>
-  <link rel="stylesheet" href="styling.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mario Game</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-  <!-- TITLE SCREEN -->
-  <div id="titleScreen" class="screen">
-    <img id="titleImage" src="https://raw.githubusercontent.com/mario-runners/mario-game/main/assets/sprites/title.png" alt="Title">
-    <div id="titleButtons">
-      <button id="startBtn">Start Game</button>
-      <div id="titleHint">Tap Start to begin</div>
-    </div>
-  </div>
+<!-- TITLE SCREEN -->
+<div id="titleScreen">
+    <img id="titleImage" src="assets/sprites/title.png" />
+    <button id="startBtn">START</button>
+</div>
 
-  <!-- PRELOADER UI -->
-  <div id="preloader" class="overlay hidden">
-    <div id="loaderBox">
-      <div id="loaderText">Loading assets... 0%</div>
-      <div id="loaderBar"><div id="loaderProgress"></div></div>
-    </div>
-  </div>
+<!-- LEVEL INTRO -->
+<video id="levelIntro" src="assets/intros/1-1.mp4"></video>
 
-  <!-- INTRO VIDEO (hidden until used) -->
-  <video id="introVideo" class="hidden" playsinline></video>
+<!-- GAME CANVAS -->
+<canvas id="gameCanvas" width="800" height="450"></canvas>
 
-  <!-- GAME CANVAS -->
-  <canvas id="gameCanvas" class="hidden"></canvas>
-
-  <!-- TOUCH CONTROLS (D-Pad like requested) -->
-  <div id="controls" class="hidden" aria-hidden="true">
+<!-- CONTROLS -->
+<div id="controls">
     <div class="dpad">
-      <button id="btnUp" class="ctl">▲</button>
-      <div class="dpad-row">
-        <button id="btnLeft" class="ctl">◀</button>
-        <button id="btnFire" class="ctl fire">🔥</button>
-        <button id="btnRight" class="ctl">▶</button>
-      </div>
-      <button id="btnDown" class="ctl">▼</button>
+        <button id="btnUp">٨</button>
+        <div class="mid-row">
+            <button id="btnLeft">٧</button>
+            <button id="btnRight">٦</button>
+        </div>
+        <button id="btnDown">٩</button>
     </div>
-  </div>
 
-  <!-- MUTE / UI -->
-  <button id="muteBtn" class="ui hidden">🔊</button>
+    <button id="btnFire" class="fire-button">🔥</button>
+</div>
 
-  <script src="thegame.js"></script>
+<script type="module" src="modules/main.js"></script>
+
 </body>
 </html>
