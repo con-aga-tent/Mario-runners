@@ -1,37 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Super Mario Bros Deluxe</title>
-  <link rel="stylesheet" href="styling.css">
+    <meta charset="UTF-8">
+    <title>Super Mario Bros Deluxe</title>
+    <link rel="stylesheet" href="styling.css">
 </head>
 <body>
 
-  <!-- Title Screen -->
-  <div id="title-screen">
-      <img id="title-image" src="https://raw.githubusercontent.com/mario-runners/mario-game/main/assets/sprites/title.png">
-      <button id="start-button">START</button>
-  </div>
+    <!-- TITLE SCREEN -->
+    <div id="titleScreen">
+        <img id="titleImage" src="https://raw.githubusercontent.com/mario-runners/mario-game/main/assets/sprites/title.png">
+        <button id="startButton">START</button>
+    </div>
 
-  <!-- Level Intro -->
-  <video id="intro-video" class="hidden" src="https://raw.githubusercontent.com/mario-runners/mario-game/main/assets/intros/1-1.mp4" playsinline></video>
+    <!-- INTRO VIDEO -->
+    <video id="introVideo" src="https://raw.githubusercontent.com/mario-runners/mario-game/main/assets/intros/1-1.mp4"></video>
 
-  <!-- Game -->
-  <canvas id="gameCanvas" class="hidden"></canvas>
+    <!-- GAME CANVAS -->
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
 
-  <!-- Mobile Controls -->
-  <div id="controls">
-      <div id="dpad">
-          <button id="left">◀</button>
-          <div class="updown">
-              <button id="jump">▲</button>
-              <button id="down">▼</button>
-          </div>
-          <button id="right">▶</button>
-      </div>
-      <button id="fire-button">🔥</button>
-  </div>
+    <!-- MOBILE CONTROLS -->
+    <div id="controls">
+        <button id="leftBtn">◀</button>
+        <button id="rightBtn">▶</button>
+        <button id="jumpBtn">⬆</button>
+        <button id="fireBtn">🔥</button>
+    </div>
 
-  <script src="thegame.js"></script>
+    <script src="thegame.js"></script>
 </body>
 </html>
